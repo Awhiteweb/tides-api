@@ -16,7 +16,16 @@ bytes = "1.0.1"
 futures = { version = "0.3", features = ["compat"] }
 reqwest = "0.11.3"
 chrono = "0.4.19"
+# Add openssl-sys as a direct dependency so it can be cross compiled to
+# x86_64-unknown-linux-musl using the "vendored" feature below
+openssl-sys = "*"
 
 [[bin]]
 name = "bootstrap"
 path = "src/main.rs"
+
+
+[features]
+# Force openssl-sys to staticly link in the openssl library. Necessary when
+# cross compiling to x86_64-unknown-linux-musl.
+vendored = ["openssl-sys/vendored"]
