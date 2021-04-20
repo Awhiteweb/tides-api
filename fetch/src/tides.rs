@@ -21,7 +21,7 @@ fn admiralty_tidal_events_url(station_id: String, duration: i32) -> String {
 
 fn admiralty_headers() -> header::HeaderMap {
     let mut headers = header::HeaderMap::new();
-    let auth_value = header::HeaderValue::from_str(&subscription_key()).unwrap();
+    let mut auth_value = header::HeaderValue::from_str(&subscription_key()).unwrap();
     auth_value.set_sensitive(true);
     headers.insert("Ocp-Apim-Subscription-Key", auth_value);
     headers

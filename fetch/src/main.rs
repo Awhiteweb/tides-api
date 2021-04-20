@@ -11,7 +11,10 @@ use chrono::{Utc, Datelike};
 mod s3;
 mod tides;
 
+#[derive(Deserialize, Debug)]
 struct LambdaRequest;
+
+#[derive(Serialize, Debug)]
 struct LambdaResponse;
 
 fn main() -> Result<(), Box<dyn Error>> {
