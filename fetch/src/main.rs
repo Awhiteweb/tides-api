@@ -4,6 +4,7 @@ use rusoto_core::Region;
 use rusoto_s3::{S3, S3Client};
 use lambda_runtime::{error::HandlerError, lambda, Context};
 use std::error::Error;
+use serde::{Deserialize, Serialize};
 use futures::executor;
 use chrono::{Utc, Datelike};
 
