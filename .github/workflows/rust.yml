@@ -1,0 +1,22 @@
+name: Rust
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: AddLambdaRuntime
+      run: rustup target add x86_64-unknown-linux-musl
+    - name: Build
+      run: cd fetch && cargo build --verbose
+    - name: Publish
+      run: cd fetch && cargo build  --release --target x86_64-unknown-linux-musl
+    - name: List
+      run: cd fetch && ls -al ./target/x86_64-unknown-linux-musl/release/
