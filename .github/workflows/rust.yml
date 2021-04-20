@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Add openSSL
+      run: apt-get install -y libssl-dev
     - name: AddLambdaRuntime
       run: rustup target add x86_64-unknown-linux-musl
     - name: Build
