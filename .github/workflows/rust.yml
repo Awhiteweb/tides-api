@@ -12,13 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Add openSSL
-      run: sudo apt-get install -y libssl-dev
-    - name: AddLambdaRuntime
-      run: rustup target add x86_64-unknown-linux-musl
+    - name: Install packages
+      run: sudo apt-get install -y libssl-dev && rustup target add x86_64-unknown-linux-musl && cargo install cross
     - name: Build
-      run: cd fetch && cargo build --verbose
+      run: cd fetch && cross build --verbose --target x86_64-unknown-linux-musl
     - name: Publish
-      run: cd fetch && cargo build  --release --target x86_64-unknown-linux-musl
+      run: cd fetch && cross publish --release --target x86_64-unknown-linux-musl
     - name: List
       run: cd fetch && ls -al ./target/x86_64-unknown-linux-musl/release/
