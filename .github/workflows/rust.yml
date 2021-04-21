@@ -10,13 +10,14 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: amazonlinux:2
+    # container:
+    #   image: amazonlinux:2
     steps:
     - uses: actions/checkout@v2
-    - name: Install packages
-      run: sudo amazon-linux-extras install -y rust1
+    # - name: Install packages
+    #   run: sudo amazon-linux-extras install -y rust1
     - name: Build
+      uses: docker://_/amazonlinux:2
       run: cd fetch && cargo build --verbose
     # - name: Publish
     #   run: cd fetch && cross publish --release --target x86_64-unknown-linux-musl
