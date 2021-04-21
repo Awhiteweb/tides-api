@@ -14,7 +14,7 @@ jobs:
       image: amazonlinux:2
     steps:
     - name: Install packages
-      run: sudo amazon-linux-extras install -y rust1
+      run: amazon-linux-extras install -y rust1
     - uses: actions/checkout@v2
     - name: Build
       run: cd fetch && cargo build --verbose
