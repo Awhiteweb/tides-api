@@ -10,12 +10,14 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: amazonlinux:2
     steps:
     - uses: actions/checkout@v2
-    # - name: Install packages
-    #   run: sudo apt-get install -y libssl-dev && rustup target add x86_64-unknown-linux-musl && cargo install cross
+    - name: Install packages
+      run: sudo apt-get install -y libssl-dev && rustup target add x86_64-unknown-linux-musl && cargo install cross
     - name: Build
-      run: sudo apt-get install -y libssl-dev && rustup target add x86_64-unknown-linux-musl && cargo install cross && cd fetch && cross build --verbose --target x86_64-unknown-linux-musl
+      run: cd fetch && cross build --verbose --target x86_64-unknown-linux-musl
     # - name: Publish
     #   run: cd fetch && cross publish --release --target x86_64-unknown-linux-musl
     # - name: List
