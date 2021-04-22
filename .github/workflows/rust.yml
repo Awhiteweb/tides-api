@@ -10,15 +10,13 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: amazonlinux:2
     steps:
-    - name: Install packages
-      run: amazon-linux-extras install -y rust1 && yum install -y tar
     - uses: actions/checkout@v2
-    - name: Build
-      run: cd fetch && cargo build --verbose
-    # - name: Publish
-    #   run: cd fetch && cross publish --release --target x86_64-unknown-linux-musl
-    # - name: List
-    #   run: cd fetch && ls -al ./target/x86_64-unknown-linux-musl/release/
+    - name: Configure AWS credentials from Test account
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-2
+    - name: Copy to S3
+      run: aws s3 cp fetch/daily_tide.zip s3://coutts-white-home-deployment/tides/code/daily_tide.zip
