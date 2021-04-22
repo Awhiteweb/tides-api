@@ -18,5 +18,7 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-2
+    - name: Zip contents
+      run: cd fetch && zip -r daily_tide.zip .
     - name: Copy to S3
       run: aws s3 cp fetch/daily_tide.zip s3://coutts-white-home-deployment/tides/code/daily_tide.zip
