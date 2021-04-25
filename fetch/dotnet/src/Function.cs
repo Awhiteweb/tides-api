@@ -59,13 +59,20 @@ namespace DailyTide
             {
                 var key = $"{today.ToString("yyyy")}/{today.ToString("MM")}/{today.ToString("dd")}/{locationId}";
                 await s3.PutObject(key, s);
-                if(string.IsNullOrEmpty(input)) {
-                    return "tides saved";
-                }
-                using( var reader = new StreamReader(s, Encoding.UTF8))
-                {
-                    return await reader.ReadToEndAsync();
-                }
+                return "tides saved";
+            }
+        }
+
+        public async Task<Stream> GetLocations()
+        {
+            var api = new Tides(this.ApiClient);
+            var s3 = new S3Client(this.S3);
+            var today = DateTime.UtcNow;
+            using( var s = await api.GetLocations() )
+            {
+                var key = $"{today.ToString("yyyy")}/locations";
+                await s3.PutObject(key, s);
+                return s;
             }
         }
     }
