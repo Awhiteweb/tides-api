@@ -2,54 +2,29 @@ name: Apis
 
 on:
   push:
-    branches: [ master ]
+    tags: 
+      - '*.*.*'
 
 jobs:
-  "tide-api":
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core SDK 3.1.x
-      uses: actions/setup-dotnet@v1.7.2
-      with:
-        dotnet-version: 3.1.x
-    - name: Install dependencies
-      run: cd api/dotnet/src && dotnet restore
-    - name: Build
-      run: cd api/dotnet/src && dotnet build --configuration Release --no-restore
-    - name: Publish
-      run: cd api/dotnet/src && dotnet publish --configuration Release -o ../../../build
-    - name: Configure AWS credentials from Test account
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-2
-    - name: Zip contents
-      run: cd build && zip -r tide_api.zip .
-    - name: Copy to S3
-      run: NOW=$(date +%s) && aws s3 cp build/tide_api.zip s3://coutts-white-home-deployment/tides/code/"tide_api-$NOW.zip"
   "daily-tide":
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core SDK 3.1.x
-      uses: actions/setup-dotnet@v1.7.2
-      with:
-        dotnet-version: 3.1.x
-    - name: Install dependencies
-      run: cd fetch/dotnet/src && dotnet restore
-    - name: Build
-      run: cd fetch/dotnet/src && dotnet build --configuration Release --no-restore
-    - name: Publish
-      run: cd fetch/dotnet/src && dotnet publish --configuration Release -o ../../../build
+    - name: Docker build action
+      uses: docker/setup-buildx-action@v1
+      id: buildx
     - name: Configure AWS credentials from Test account
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-2
-    - name: Zip contents
-      run: cd build && zip -r daily_tide.zip .
-    - name: Copy to S3
-      run: NOW=$(date +%s) && aws s3 cp build/daily_tide.zip s3://coutts-white-home-deployment/tides/code/"daily_tide-$NOW.zip"
+    - name: Push docker image
+      uses: docker/build-push-action@v2
+      id: docker_build
+      with:
+        context: ./fetch/src/
+        file: ./fetch/src/Dockerfile
+        builder: ${{ steps.buildx.outputs.name }}
+        push: true
+        tags: ${{ secrets.AWS_REPO_URI }}/
