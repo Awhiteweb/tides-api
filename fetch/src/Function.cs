@@ -37,6 +37,7 @@ namespace DailyTide
             if(input.LocationId == "all")
             {
                 await app.GetLocations();
+                return;
             }
             await app.Run(input.LocationId);
         }
