@@ -33,7 +33,7 @@ jobs:
         IMAGE_TAG: ${{ steps.extract_tag.outputs.tag }}
       run: |
         cd ./fetch/src/
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG 
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
     # - name: Push docker image
     #   uses: docker/build-push-action@v2
