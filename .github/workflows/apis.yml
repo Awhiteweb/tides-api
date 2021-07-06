@@ -26,12 +26,21 @@ jobs:
       shell: bash
       run: echo "##[set-output name=tag;]$(echo ${GITHUB_REF:10})"
       id: extract_tag
-    - name: Push docker image
-      uses: docker/build-push-action@v2
-      id: docker_build
-      with:
-        context: ./fetch/src/
-        file: ./fetch/src/Dockerfile
-        builder: ${{ steps.buildx.outputs.name }}
-        push: true
-        tags: ${{ secrets.AWS_REPO_URI }}/coutts-white-fetch-tides-api:${{ steps.extract_tag.outputs.tag }}
+    - name: build, tag, push image to ECR
+      env: 
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: coutts-white-fetch-tides-api
+        IMAGE_TAG: ${{ steps.extract_tag.outputs.tag }}
+      run: |
+        cd ./fetch/src/
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG 
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    # - name: Push docker image
+    #   uses: docker/build-push-action@v2
+    #   id: docker_build
+    #   with:
+    #     context: ./fetch/src/
+    #     file: ./fetch/src/Dockerfile
+    #     builder: ${{ steps.buildx.outputs.name }}
+    #     push: true
+    #     tags: ${{ secrets.AWS_REPO_URI }}/coutts-white-fetch-tides-api:${{ steps.extract_tag.outputs.tag }}
