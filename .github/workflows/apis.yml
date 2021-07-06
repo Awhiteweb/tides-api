@@ -41,4 +41,4 @@ jobs:
         ECR_REPOSITORY: coutts-white-fetch-tides-api
         IMAGE_TAG: ${{ steps.extract_tag.outputs.tag }}
         LAMBDA_FUNCTION: daily-tide
-      run: aws lambda update-function-code --function-name $LAMBDA_FUNCTION --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG output.log
+      run: aws lambda update-function-code --function-name $LAMBDA_FUNCTION --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
