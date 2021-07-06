@@ -8,6 +8,8 @@ on:
 jobs:
   "daily-tide":
     runs-on: ubuntu-latest
+    env:
+      TAG: ${{ GITHUB_REF:10 }}
     steps:
     - uses: actions/checkout@v2
     - name: Configure AWS credentials from Test account
@@ -30,4 +32,4 @@ jobs:
         file: ./fetch/src/Dockerfile
         builder: ${{ steps.buildx.outputs.name }}
         push: true
-        tags: ${{ secrets.AWS_REPO_URI }}/coutts-white-fetch-tides-api:${{ github.ref:10 }}
+        tags: ${{ secrets.AWS_REPO_URI }}/coutts-white-fetch-tides-api:$TAG
