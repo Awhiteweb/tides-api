@@ -1,10 +1,15 @@
+using System.Threading.Tasks;
+using System.Net.Http;
+using Amazon.S3;
+using System;
+
 namespace DailyTide
 {
     public class App
     {
         private readonly string DefaultLocationId = Environment.GetEnvironmentVariable("DefaultLocationId");
         private readonly Tides TidesApi;
-        private readonly S3 StorageApi;
+        private readonly S3Client StorageApi;
 
         public App(HttpClient apiClient, AmazonS3Client s3)
         {

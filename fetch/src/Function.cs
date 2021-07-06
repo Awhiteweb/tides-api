@@ -31,14 +31,14 @@ namespace DailyTide
         /// <param name="input"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<string> FunctionHandler(InputRequest input, ILambdaContext context)
+        public async Task FunctionHandler(InputRequest input, ILambdaContext context)
         {
             var app = new App(this.ApiClient, this.S3);
             if(input.LocationId == "all")
             {
-                return await app.GetLocations();
+                await app.GetLocations();
             }
-            return await app.Run(input.LocationId);
+            await app.Run(input.LocationId);
         }
     }
 }

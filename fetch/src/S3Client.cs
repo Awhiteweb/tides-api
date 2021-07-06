@@ -22,7 +22,7 @@ namespace DailyTide
                 BucketName = this.Bucket,
                 Key = key,
                 InputStream = body,
-		        CannedAcl = S3CannedACL.PublicRead
+		        CannedACL = S3CannedACL.PublicRead
             };
             await this.Client.PutObjectAsync(request);
         }
