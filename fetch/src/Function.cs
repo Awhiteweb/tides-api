@@ -26,7 +26,7 @@ namespace DailyTide
         }
         
         /// <summary>
-        /// A simple function that takes a string and does a ToUpper
+        /// A simple function that takes an input from a scheduled event and stores the result in S3
         /// </summary>
         /// <param name="input"></param>
         /// <param name="context"></param>
@@ -40,6 +40,17 @@ namespace DailyTide
                 return;
             }
             await app.Run(input.LocationId);
+        }
+
+        /// <summary>
+        /// An async function handler that is triggered from Api Gateway where the client is requesting a new set of tide events for a specific location
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public async Task<Stream> ResponseFunctionHandlerAsync(InputRequest input, ILambdaContext context)
+        {
+            return await new Tides( this.ApiClient ).GetTideEvents( input.LocationId );
         }
     }
 }
