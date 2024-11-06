@@ -1,7 +1,7 @@
-using System;
-using System.IO;
 using Amazon.S3;
 using Amazon.S3.Model;
+using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace DailyTide
@@ -13,18 +13,18 @@ namespace DailyTide
 
         public S3Client(AmazonS3Client client) 
         {
-            this.Client = client;
+            Client = client;
         }
 
         public async Task PutObject(string key, Stream body)
         {
             var request = new PutObjectRequest {
-                BucketName = this.Bucket,
+                BucketName = Bucket,
                 Key = key,
                 InputStream = body,
 		        CannedACL = S3CannedACL.PublicRead
             };
-            await this.Client.PutObjectAsync(request);
+            await Client.PutObjectAsync(request);
         }
     }
 }

@@ -1,7 +1,11 @@
-using System.Threading.Tasks;
-using System.Net.Http;
 using Amazon.S3;
+using Amazon.SimpleNotificationService;
 using System;
+using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 
 namespace DailyTide
 {
@@ -11,31 +15,54 @@ namespace DailyTide
         private readonly Tides TidesApi;
         private readonly S3Client StorageApi;
 
-        public App(HttpClient apiClient, AmazonS3Client s3)
+        private readonly SnsClient SnsClient;
+
+        public App(HttpClient apiClient, AmazonS3Client s3, AmazonSimpleNotificationServiceClient sns)
         {
-            this.TidesApi = new Tides( apiClient );
-            this.StorageApi = new S3Client( s3 );
+            TidesApi = new Tides( apiClient );
+            StorageApi = new S3Client( s3 );
+            SnsClient = new SnsClient( sns );
         }
 
         public async Task Run(string input)
         {
-            var locationId = string.IsNullOrEmpty(input) ? this.DefaultLocationId : input;
+            var locationId = string.IsNullOrEmpty(input) ? DefaultLocationId : input;
             var today = DateTime.UtcNow;
-            using( var s = await this.TidesApi.GetTideEvents(locationId) )
+            using var s = await TidesApi.GetTideEvents(locationId);
+            var key = $"{today:yyyy}/{today:MM}/{today:dd}/{locationId}";
+            await StorageApi.PutObject(key, s);
+            
+            if( DateTime.UtcNow.DayOfWeek == DayOfWeek.Monday )
             {
-                var key = $"{today.ToString("yyyy")}/{today.ToString("MM")}/{today.ToString("dd")}/{locationId}";
-                await this.StorageApi.PutObject(key, s);
+                var tides = await JsonSerializer.DeserializeAsync<AdmiraltyTide[]>(s);
+                var suitableTide = tides.FirstOrDefault(t => t.EventType.Equals("HighWater", StringComparison.InvariantCulture) 
+                                                          && t.DateTime.DayOfWeek > DayOfWeek.Monday
+                                                          && t.DateTime.DayOfWeek < DayOfWeek.Saturday
+                                                          && t.DateTime.Hour > 18 
+                                                          && t.DateTime.Hour < 22);
+                if(suitableTide != null)
+                {
+                    // notify that there is a suitable tide after today
+                    var message = $"Tide height on {suitableTide.DateTime.DayOfWeek} {GetDaySuffix(suitableTide.DateTime.Day)} is {double.Round(suitableTide.Height,2)}";
+                    await SnsClient.SendMessage(message);
+                }
             }
         }
 
         public async Task GetLocations()
         {
             var today = DateTime.UtcNow;
-            using( var s = await this.TidesApi.GetLocations() )
-            {
-                var key = $"{today.ToString("yyyy")}/locations";
-                await this.StorageApi.PutObject(key, s);
-            }
+            using var s = await TidesApi.GetLocations();
+            var key = $"{today:yyyy}/locations";
+            await StorageApi.PutObject(key, s);
         }
+
+        private static string GetDaySuffix(int day) => day switch
+        {
+            1 or 21 or 31 => $"{day}st",
+            2 or 22 => $"{day}nd",
+            3 or 23 => $"{day}rd",
+            _ => $"{day}th",
+        };
     }
 }

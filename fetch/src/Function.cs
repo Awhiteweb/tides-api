@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-
 using Amazon.Lambda.Core;
 using Amazon.S3;
+using Amazon.SimpleNotificationService;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -18,11 +15,13 @@ namespace DailyTide
     {
         private readonly HttpClient ApiClient;
         private readonly AmazonS3Client S3;
+        private readonly AmazonSimpleNotificationServiceClient SNS;
 
         public Function()
         {
-            this.ApiClient = new HttpClient();
-            this.S3 = new AmazonS3Client();
+            ApiClient = new HttpClient();
+            S3 = new AmazonS3Client();
+            SNS = new AmazonSimpleNotificationServiceClient();
         }
         
         /// <summary>
@@ -33,7 +32,7 @@ namespace DailyTide
         /// <returns></returns>
         public async Task FunctionHandler(InputRequest input, ILambdaContext context)
         {
-            var app = new App(this.ApiClient, this.S3);
+            var app = new App(ApiClient, S3, SNS);
             if(input.LocationId == "all")
             {
                 await app.GetLocations();
@@ -50,7 +49,7 @@ namespace DailyTide
         /// <returns></returns>
         public async Task<Stream> ResponseFunctionHandlerAsync(InputRequest input, ILambdaContext context)
         {
-            return await new Tides( this.ApiClient ).GetTideEvents( input.LocationId );
+            return await new Tides( ApiClient ).GetTideEvents( input.LocationId );
         }
     }
 }
