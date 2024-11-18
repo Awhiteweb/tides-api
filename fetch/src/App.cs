@@ -21,21 +21,17 @@ namespace DailyTide
         {
             var locationId = string.IsNullOrEmpty(input) ? this.DefaultLocationId : input;
             var today = DateTime.UtcNow;
-            using( var s = await this.TidesApi.GetTideEvents(locationId) )
-            {
-                var key = $"{today.ToString("yyyy")}/{today.ToString("MM")}/{today.ToString("dd")}/{locationId}";
-                await this.StorageApi.PutObject(key, s);
-            }
+            var s = await this.TidesApi.GetTideEvents(locationId);
+            var key = $"{today.ToString("yyyy")}/{today.ToString("MM")}/{today.ToString("dd")}/{locationId}";
+            await this.StorageApi.PutObject(key, s);
         }
 
         public async Task GetLocations()
         {
             var today = DateTime.UtcNow;
-            using( var s = await this.TidesApi.GetLocations() )
-            {
-                var key = $"{today.ToString("yyyy")}/locations";
-                await this.StorageApi.PutObject(key, s);
-            }
+            var s = await this.TidesApi.GetLocations();
+            var key = $"{today.ToString("yyyy")}/locations";
+            await this.StorageApi.PutObject(key, s);
         }
     }
 }

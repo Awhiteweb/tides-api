@@ -17,7 +17,7 @@ namespace DailyTide
             this.Client = client;
         }
 
-        public async Task<Stream> GetTideEvents(string locationId)
+        public async Task<string> GetTideEvents(string locationId)
         {
             this.Client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", this.SubscriptionKey);
             var request = $"{this.StationsUrl}/{locationId}/TidalEvents?7";
@@ -29,10 +29,10 @@ namespace DailyTide
                 Console.Error.WriteLine( await response.Content.ReadAsStringAsync() );
                 throw new Exception("error with api request");
             }
-            return await response.Content.ReadAsStreamAsync();
+            return await response.Content.ReadAsStringAsync();
         }
 
-        public async Task<Stream> GetLocations()
+        public async Task<string> GetLocations()
         {
             this.Client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", this.SubscriptionKey);
             var request = $"{this.StationsUrl}";
@@ -43,7 +43,7 @@ namespace DailyTide
                 Console.Error.WriteLine( response.StatusCode );
                 throw new Exception("error with api request");
             }
-            return await response.Content.ReadAsStreamAsync();
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

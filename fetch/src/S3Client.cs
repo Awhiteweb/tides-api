@@ -16,12 +16,13 @@ namespace DailyTide
             this.Client = client;
         }
 
-        public async Task PutObject(string key, Stream body)
+        public async Task PutObject(string key, string body)
         {
             var request = new PutObjectRequest {
                 BucketName = this.Bucket,
                 Key = key,
-                InputStream = body,
+                ContentBody = body,
+                ContentType = "application/json",
 		        CannedACL = S3CannedACL.PublicRead
             };
             await this.Client.PutObjectAsync(request);

@@ -48,7 +48,7 @@ namespace DailyTide
         /// <param name="input"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<Stream> ResponseFunctionHandlerAsync(InputRequest input, ILambdaContext context)
+        public async Task<string> ResponseFunctionHandlerAsync(InputRequest input, ILambdaContext context)
         {
             return await new Tides( this.ApiClient ).GetTideEvents( input.LocationId );
         }
