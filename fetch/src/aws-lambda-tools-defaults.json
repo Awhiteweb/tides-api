@@ -8,8 +8,8 @@
   "profile": "",
   "region": "",
   "configuration": "Release",
-  "framework": "netcoreapp3.1",
-  "function-runtime": "dotnetcore3.1",
+  "framework": "net8",
+  "function-runtime": "net8",
   "function-memory-size": 256,
   "function-timeout": 30,
   "function-handler": "DailyTide::DailyTide.Function::FunctionHandler"

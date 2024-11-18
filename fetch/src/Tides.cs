@@ -14,15 +14,15 @@ namespace DailyTide
 
         public Tides(HttpClient client) 
         {
-            this.Client = client;
+            Client = client;
         }
 
         public async Task<string> GetTideEvents(string locationId)
         {
-            this.Client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", this.SubscriptionKey);
-            var request = $"{this.StationsUrl}/{locationId}/TidalEvents?7";
+            Client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", SubscriptionKey);
+            var request = $"{StationsUrl}/{locationId}/TidalEvents?7";
             Console.WriteLine($"making request to {request}");
-            var response = await this.Client.GetAsync(request);
+            var response = await Client.GetAsync(request);
             if(!response.IsSuccessStatusCode)
             {
                 Console.Error.WriteLine( response.StatusCode );
@@ -34,10 +34,10 @@ namespace DailyTide
 
         public async Task<string> GetLocations()
         {
-            this.Client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", this.SubscriptionKey);
-            var request = $"{this.StationsUrl}";
+            Client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", SubscriptionKey);
+            var request = $"{StationsUrl}";
             Console.WriteLine($"making request to {request}");
-            var response = await this.Client.GetAsync(request);
+            var response = await Client.GetAsync(request);
             if(!response.IsSuccessStatusCode)
             {
                 Console.Error.WriteLine( response.StatusCode );
